@@ -20,5 +20,3 @@ After each valid guess, every letter is marked:
 Use the hints to refine your next guess.
 
 You win if you guess the word in time; otherwise, you lose after 5 attempts.
-
-The guess history is printed line by line. At the start, an empty row of |_| placeholders is shown for each character in the word (e.g., a 5-letter word shows |_||_||_||_||_|).
