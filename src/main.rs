@@ -3,6 +3,19 @@ use std::io::{self, Write};
 
 use worlde::{Game, GameStatus};
 
+use rand::seq::SliceRandom;
+use rand::thread_rng;
+use std::fs;
+
+fn load_words(path: &str) -> Vec<String> {
+    fs::read_to_string(path)
+        .expect("Could not read word list")
+        .lines()
+        .map(|l| l.trim().to_string())
+        .filter(|w| !w.is_empty())
+        .collect()
+}
+
 fn print_legend() {
     println!("Legend:");
     println!("  [A] = Full match (correct letter, correct position)");
@@ -22,8 +35,11 @@ fn read_line(prompt: &str) -> io::Result<String> {
 fn main() {
     // Defaults
     let mut alphabet = String::from("abcdefghijklmnopqrstuvwxyz");
-    let mut target   = String::from("rebus"); // simple demo word
+    let words = load_words("words.txt");
 
+    let mut rng = thread_rng();
+    let target = words.choose(&mut rng).unwrap();
+    
     // Very simple arg parsing:
     //   --word <word>         (sets target word)
     //   --alphabet <alphabet> (sets allowed alphabet)
@@ -76,12 +92,12 @@ fn main() {
 
                 match game.status {
                     GameStatus::Won => {
-                        println!("🎉 You won! The word was: {}", game.win_word);
+                        println!("You won! The word was: {}", game.win_word);
                         println!("\nFull history:\n{}", game);
                         break;
                     }
                     GameStatus::Lost => {
-                        println!("💀 You lost. The word was: {}", game.win_word);
+                        println!("You lost. The word was: {}", game.win_word);
                         println!("\nFull history:\n{}", game);
                         break;
                     }
@@ -95,15 +111,15 @@ fn main() {
                 match err {
                     worlde::GameError::WrongLength { expected, actual } => {
                         println!(
-                            "❗ Wrong length: expected {expected}, got {actual}. Try again."
+                            "Wrong length: expected {expected}, got {actual}. Try again."
                         );
                     }
                     worlde::GameError::NotInAlphabet(ch) => {
                         if ch == '\0' {
-                            println!("❗ Empty guess is not allowed.");
+                            println!("Empty guess is not allowed.");
                         } else {
                             println!(
-                                "❗ Character '{ch}' is not in the allowed alphabet. Try again."
+                                "Character '{ch}' is not in the allowed alphabet. Try again."
                             );
                         }
                     }
