@@ -38,7 +38,11 @@ fn main() {
     let words = load_words("words.txt");
 
     let mut rng = thread_rng();
-    let target = words.choose(&mut rng).unwrap();
+    // OWNED + MUTABLE String (not &String)
+    let mut target: String = words
+        .choose(&mut rng)
+        .expect("word list unexpectedly empty")
+        .to_string();
     
     // Very simple arg parsing:
     //   --word <word>         (sets target word)
